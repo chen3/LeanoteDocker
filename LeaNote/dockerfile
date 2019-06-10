@@ -1,0 +1,35 @@
+FROM golang:1.12.5-alpine3.9
+RUN apk update;\
+    apk add git;\
+# go get github.com/revel/cmd/revel
+    git clone --depth=1 -b release-branch.go1.12 https://github.com/golang/sys.git $GOPATH/src/golang.org/x/sys;\
+    git clone --depth=1 -b v1.0.0 https://github.com/agtorre/gocolorize.git $GOPATH/src/github.com/agtorre/gocolorize;\
+    git clone --depth=1 -b v2.14 https://github.com/inconshreveable/log15.git $GOPATH/src/github.com/inconshreveable/log15;\
+    git clone --depth=1 -b v1.4.0 https://github.com/jessevdk/go-flags.git $GOPATH/src/github.com/jessevdk/go-flags;\
+    git clone --depth=1 -b v0.1.2 https://github.com/mattn/go-colorable.git $GOPATH/src/github.com/mattn/go-colorable;\
+    git clone --depth=1 -b v0.0.8 https://github.com/mattn/go-isatty.git $GOPATH/src/github.com/mattn/go-isatty;\
+    git clone --depth=1 -b v0.8.1 https://github.com/pkg/errors.git $GOPATH/src/github.com/pkg/errors;\
+    git clone --depth=1 -b v0.21.1 https://github.com/revel/cmd.git $GOPATH/src/github.com/revel/cmd;\
+    git clone --depth=1 -b v0.21.0 https://github.com/revel/config.git $GOPATH/src/github.com/revel/config;\
+    git clone --depth=1 -b v2.11.20 https://github.com/revel/log15.git $GOPATH/src/github.com/revel/log15;\
+    git clone --depth=1 -b v1.4.7 https://github.com/fsnotify/fsnotify.git $GOPATH/src/gopkg.in/fsnotify/fsnotify.v1;\
+    git clone --depth=1 -b v2.1 https://github.com/natefinch/lumberjack.git $GOPATH/src/gopkg.in/natefinch/lumberjack.v2;\
+    git clone --depth=1 -b v0 https://github.com/go-stack/stack.git $GOPATH/src/gopkg.in/stack.v0;\
+    go install github.com/revel/cmd/revel;\
+# go get github.com/golang/dep/cmd/dep
+    git clone --depth=1 -b v0.5.3 https://github.com/golang/dep.git $GOPATH/src/github.com/golang/dep;\
+    go install github.com/golang/dep/cmd/dep;\
+# go get github.com/leanote/leanote/app
+    git clone --depth=1 -b 2.6.1 https://github.com/leanote/leanote.git $GOPATH/src/github.com/leanote/leanote;\
+# update conf
+    sed -i "s/i18n.default_language=en-us/i18n.default_language=zh-cn/" $GOPATH/src/github.com/leanote/leanote/conf/app.conf;\
+    sed -i "s/http.port=9000/http.port=80/" $GOPATH/src/github.com/leanote/leanote/conf/app.conf
+# $GOPATH = /go
+VOLUME ["/go/src/github.com/leanote/leanote/files", "/go/src/github.com/leanote/leanote/public/upload"]
+ENV DB_HOST="db"
+EXPOSE 80
+
+WORKDIR /app
+COPY ./start.sh ./
+RUN chmod +x ./start.sh
+ENTRYPOINT ["sh", "start.sh"]

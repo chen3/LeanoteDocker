@@ -1,0 +1,3 @@
+[submodule "Mongo/leanote"]
+	path = Mongo/leanote
+	url = https://github.com/leanote/leanote.git
