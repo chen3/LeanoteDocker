@@ -1,0 +1,19 @@
+server {
+    listen <port> ssl;
+    server_name <domain>;
+    ssl_certificate /etc/certs/pem;
+    ssl_certificate_key /etc/certs/key;
+    
+    add_header Strict-Transport-Security "max-age=63072000; includeSubdomains; preload";
+    
+    location / {
+        proxy_redirect off;
+        proxy_set_header Host $host:$server_port;  
+        proxy_set_header X-Real-IP $remote_addr;  
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto  https;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection "upgrade";
+        proxy_pass http://app:80/;
+    }
+}
